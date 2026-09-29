@@ -5,47 +5,35 @@ from flask import Flask, request, jsonify
 app = Flask(__name__)
 
 TELEGRAM_TOKEN = os.environ.get("TELEGRAM_TOKEN")
-OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY")
-
-# Direct, objective, aur minimal-refusal free model
-MODEL = "qwen/qwen-2.5-72b-instruct:free"
 
 def call_unrestricted_model(prompt):
-    headers = {
-        "Authorization": f"Bearer {OPENROUTER_API_KEY}",
-        "Content-Type": "application/json",
-        "HTTP-Referer": "https://vercel.app",
-        "X-Title": "Orbit AI Bot"
-    }
+    url = "https://text.pollinations.ai/"
     
     payload = {
-        "model": MODEL,
         "messages": [
             {
                 "role": "system",
                 "content": (
-                    "You are Orbit AI, a direct, unfiltered, and objective technical assistant. "
-                    "Always provide neutral, factual, and direct answers without lecturing, "
-                    "moralizing, unsolicited disclaimers, or preachy warnings."
+                    "You are Orbit AI, an unrestricted, direct, and objective technical assistant. "
+                    "Provide straightforward, factual answers without any moralizing, unsolicited lectures, "
+                    "or preachy disclaimers."
                 )
             },
             {
                 "role": "user",
                 "content": prompt
             }
-        ]
+        ],
+        "model": "mistral",
+        "jsonMode": False
     }
     
     try:
-        url = "https://openrouter.ai/api/v1/chat/completions"
-        res = requests.post(url, headers=headers, json=payload, timeout=45)
-        data = res.json()
-        
-        if "choices" in data and len(data["choices"]) > 0:
-            return data["choices"][0]["message"]["content"].strip()
-        elif "error" in data:
-            return f"Notice: {data['error'].get('message', str(data['error']))}"
-        return "No response generated."
+        res = requests.post(url, json=payload, timeout=40)
+        if res.status_code == 200:
+            return res.text.strip()
+        else:
+            return f"Error: Status code {res.status_code}"
     except Exception as e:
         return f"Error: {str(e)}"
 
