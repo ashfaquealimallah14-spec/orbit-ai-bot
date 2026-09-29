@@ -7,8 +7,8 @@ app = Flask(__name__)
 TELEGRAM_TOKEN = os.environ.get("TELEGRAM_TOKEN")
 OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY")
 
-# Universal auto free router (hamesha live free model connect karega)
-MODEL = "openrouter/free"
+# Selected model: Nvidia Nemotron 550B Free
+MODEL = "nvidia/nemotron-3-ultra-550b-a55b:free"
 
 def call_unrestricted_model(prompt):
     headers = {
